@@ -49,6 +49,7 @@
   },
   "main": "index.js",
   "module": "common.js",
+  "sideEffects": false,
   "engines": {
     "node": ">=0.8"
   },

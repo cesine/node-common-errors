@@ -1,60 +1,54 @@
-var util = require('util');
+var generateClass = require('./lib/helpers/class-generator');
 
-var exports = module.exports = {
-  helpers: {
-    generateClass: require('./lib/helpers/class-generator')
-  },
-};
+var AlreadyInUseError = AlreadyInUse = require('./lib/alreadyInUse');
+var ArgumentError = Argument = require('./lib/argument');
+var ArgumentNullError = ArgumentNull = require('./lib/argumentNull');
+var AuthenticationRequiredError = AuthenticationRequired = require('./lib/authenticationRequired');
+var ConnectionError = generateClass('ConnectionError');
+var CommonError = generateClass('Error');
+var Error = generateClass('Error');
+var HttpStatusError = HttpStatus = require('./lib/http-status');
+var InvalidOperationError = require('./lib/invalid-operation');
+var NotFoundError = require('./lib/not-found');
+var NotImplementedError = generateClass('NotImplementedError');
+var NotSupportedError = NotSupported = require('./lib/not-supported');
+var NotPermittedError = NotPermitted = require('./lib/notPermitted');
+var OutOfMemoryError = generateClass('OutOfMemoryError');
+var CommonRangeError = generateClass('RangeError', { extends: RangeError });
+var CommonReferenceError = generateClass('ReferenceError', { extends: ReferenceError });
+var StackOverflowError = generateClass('StackOverflowError');
+var CommonSyntaxError = generateClass('SyntaxError', { extends: SyntaxError });
+var TimeoutError = require('./lib/timeout.js');
+var CommonTypeError = generateClass('TypeError', { extends: TypeError });
+var CommonURIError = generateClass('URIError', { extends: URIError });
+var ValidationError = Validation = require('./lib/validation');
 
-exports.AlreadyInUseError = exports.AlreadyInUse = require('./lib/alreadyInUse');
-exports.ArgumentError = exports.Argument = require('./lib/argument');
-exports.ArgumentNullError = exports.ArgumentNull = require('./lib/argumentNull');
-exports.AuthenticationRequiredError = exports.AuthenticationRequired = require('./lib/authenticationRequired');
-exports.ConnectionError = exports.helpers.generateClass('ConnectionError');
-exports.Error = exports.helpers.generateClass('Error');
-exports.HttpStatusError = exports.HttpStatus = require('./lib/http-status');
-exports.InvalidOperationError = require('./lib/invalid-operation');
-exports.NotFoundError = require('./lib/not-found');
-exports.NotImplementedError = exports.helpers.generateClass('NotImplementedError'),
-exports.NotSupportedError = exports.NotSupported = require('./lib/not-supported');
-exports.NotPermittedError = exports.NotPermitted = require('./lib/notPermitted');
-exports.OutOfMemoryError = exports.helpers.generateClass('OutOfMemoryError');
-exports.RangeError = exports.helpers.generateClass('RangeError', { extends: RangeError });
-exports.ReferenceError = exports.helpers.generateClass('ReferenceError', { extends: ReferenceError });
-exports.StackOverflowError = exports.helpers.generateClass('StackOverflowError');
-exports.SyntaxError = exports.helpers.generateClass('SyntaxError', { extends: SyntaxError });
-exports.TimeoutError = require('./lib/timeout.js')
-exports.TypeError = exports.helpers.generateClass('TypeError', { extends: TypeError });
-exports.URIError = exports.helpers.generateClass('URIError', { extends: URIError });
-exports.ValidationError = exports.Validation = require('./lib/validation');
-
-exports.io = {
+var io = {
   IOError: require('./lib/io/io')
 };
-exports.io.DirectoryNotFoundError = exports.helpers.generateClass('DirectoryNotFoundError', { extends: exports.io.IOError });
-exports.io.DriveNotFoundError = exports.helpers.generateClass('DriveNotFoundError', { extends: exports.io.IOError });
-exports.io.EndOfStreamError = exports.helpers.generateClass('EndOfStreamError', { extends: exports.io.IOError });
-exports.io.FileLoadError = require('./lib/io/file-load');
-exports.io.FileNotFoundError = require('./lib/io/file-not-found');
-exports.io.SocketError = exports.helpers.generateClass('SocketError', { extends: exports.io.IOError });
+io.DirectoryNotFoundError = generateClass('DirectoryNotFoundError', { extends: io.IOError });
+io.DriveNotFoundError = generateClass('DriveNotFoundError', { extends: io.IOError });
+io.EndOfStreamError = generateClass('EndOfStreamError', { extends: io.IOError });
+io.FileLoadError = require('./lib/io/file-load');
+io.FileNotFoundError = require('./lib/io/file-not-found');
+io.SocketError = generateClass('SocketError', { extends: io.IOError });
 
-exports.data = {
+var data = {
   DataError: require('./lib/data/data')
 };
-exports.data.MemcachedError = exports.helpers.generateClass('MemcachedError', { extends: exports.data.DataError });
-exports.data.MongoDBError = exports.helpers.generateClass('MongoDBError', { extends: exports.data.DataError });
-exports.data.RedisError = exports.helpers.generateClass('RedisError', { extends: exports.data.DataError });
-exports.data.RollbackError = exports.helpers.generateClass('RollbackError', { extends: exports.data.DataError });
-exports.data.SQLError = exports.helpers.generateClass('SQLError', { extends: exports.data.DataError });
-exports.data.TransactionError = exports.helpers.generateClass('TransactionError', { extends: exports.data.DataError });
+data.MemcachedError = generateClass('MemcachedError', { extends: data.DataError });
+data.MongoDBError = generateClass('MongoDBError', { extends: data.DataError });
+data.RedisError = generateClass('RedisError', { extends: data.DataError });
+data.RollbackError = generateClass('RollbackError', { extends: data.DataError });
+data.SQLError = generateClass('SQLError', { extends: data.DataError });
+data.TransactionError = generateClass('TransactionError', { extends: data.DataError });
 
 
-
-exports.Generic = exports.helpers.generateClass('GenericError'); //deprecated
+var Generic = generateClass('GenericError'); //deprecated
 
 
 var logErrorDeprecationWarning = false;
-module.exports.logError = function(err, cb) {
+var logError = function(err, cb) {
   if (!logErrorDeprecationWarning) console.warn("logError is deprecated.  Use log instead.");
   logErrorDeprecationWarning = true;
 
@@ -65,14 +59,14 @@ module.exports.logError = function(err, cb) {
   if (cb) cb(err);
 };
 
-module.exports.log = function(err, message) {
+var log = function(err, message) {
   if (typeof err == 'string') {
-    err = new module.exports.Error(err);
+    err = new Error(err);
   } else {
     if (message) {
       err.message = message;
     }
-    err = module.exports.prependCurrentStack(err, 3);
+    err = prependCurrentStack(err, 3);
   }
   if (err) {
     console.error(err && err.stack || err);
@@ -81,11 +75,53 @@ module.exports.log = function(err, message) {
   return err;
 }
 
-module.exports.prependCurrentStack = function(err, offset_) {
+var prependCurrentStack = function(err, offset_) {
   var linesToSkip = (typeof offset_ === 'undefined') ? 2 : offset_;
   var stackToPrepend = (new Error()).stack.split("\n").slice(linesToSkip);
   var mainStack = (err.stack || '').split("\n");
   var errTitle = mainStack.shift();
   err.stack = [errTitle].concat(stackToPrepend, "====", mainStack).join("\n");
   return err;
+};
+
+module.exports = {
+  AlreadyInUse: AlreadyInUse,
+  AlreadyInUseError: AlreadyInUseError,
+  Argument: Argument,
+  ArgumentError: ArgumentError,
+  ArgumentNull: ArgumentNull,
+  ArgumentNullError: ArgumentNullError,
+  AuthenticationRequired: AuthenticationRequired,
+  AuthenticationRequiredError: AuthenticationRequiredError,
+  CommonError: CommonError,
+  ConnectionError: ConnectionError,
+  data: data,
+  Error: CommonError,
+  Generic: Generic,
+  HttpStatus: HttpStatus,
+  HttpStatusError: HttpStatusError,
+  InvalidOperationError: InvalidOperationError,
+  helpers: {
+    generateClass: generateClass,
+  },
+  io: io,
+  log: log,
+  logError: logError,
+  NotFoundError: NotFoundError,
+  NotImplementedError: NotImplementedError,
+  NotPermitted: NotPermitted,
+  NotPermittedError: NotPermittedError,
+  NotSupported: NotSupported,
+  NotSupportedError: NotSupportedError,
+  OutOfMemoryError: OutOfMemoryError,
+  prependCurrentStack: prependCurrentStack,
+  RangeError: CommonRangeError,
+  ReferenceError: CommonReferenceError,
+  StackOverflowError: StackOverflowError,
+  SyntaxError: CommonSyntaxError,
+  TimeoutError: TimeoutError,
+  TypeError: CommonTypeError,
+  URIError: CommonURIError,
+  Validation: Validation,
+  ValidationError: ValidationError,
 };

@@ -1,6 +1,4 @@
-module.exports = require('./common');
+var middleware = require('./lib/middleware');
 
-module.exports.middleware = {
-  errorHandler: require('./lib/middleware/errorHandler'),
-  crashProtector: require('./lib/middleware/crashProtector')
-};
+module.exports = require('./common');
+module.exports.middleware = middleware;
